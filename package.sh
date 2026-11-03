@@ -58,4 +58,5 @@ sync
 hdiutil detach -quiet "$MNT"
 hdiutil convert -quiet "$RW" -format UDZO -imagekey zlib-level=9 -o "$DMG"
 rm -f "$RW"
+rm -rf build   # 不留编译副本，免得聚焦搜索里出现两个 BarMeter
 echo "✓ $DMG"

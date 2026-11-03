@@ -46,4 +46,5 @@ else
   open "$DEST"
 fi
 
+rm -rf build   # 不留编译副本，免得聚焦搜索里出现两个 BarMeter
 echo "✓ 完成。看一下右上角状态栏。"
