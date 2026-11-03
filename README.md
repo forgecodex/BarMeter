@@ -10,28 +10,44 @@
 
 ---
 
-## 快速安装（3 分钟）
+## 安装（推荐：下载安装包）
 
-### 1. 确认系统和编译工具
+需要 **macOS 12 Monterey 及以上**，Apple 芯片和 Intel 都能用（同一个安装包）。
 
-需要 **macOS 12 Monterey 及以上**，Apple 芯片和 Intel 都支持。
+1. 打开 [Releases 页面](https://github.com/paxfi/BarMeter/releases/latest)，下载 `BarMeter-x.x.dmg`。
+   仓库是 paxfi 组织私有的，需要先在浏览器里登录有组织权限的 GitHub 账号。
+2. 双击打开 dmg，把 **BarMeter** 拖到旁边的 **Applications（应用程序）** 文件夹。
+3. 到「应用程序」里双击 BarMeter 打开。
 
-打开「终端」，先检查有没有装 Xcode 命令行工具：
+**第一次打开提示「无法验证开发者」/「Apple 无法检查其是否包含恶意软件」？**
+这是因为安装包没有经过 Apple 公证，程序本身没问题。点「完成」关掉提示，然后：
 
-```bash
-xcrun --find swiftc
-```
-
-- 输出一个路径（如 `/Library/Developer/CommandLineTools/usr/bin/swiftc`）→ 已装好，跳到第 2 步。
-- 报错 → 先安装，弹窗里点「安装」，等几分钟装完：
+- 打开「系统设置 → 隐私与安全性」，往下翻到「安全性」，点 BarMeter 旁边的 **「仍要打开」**，输入开机密码确认。只需要做这一次。
+- 或者在终端里运行下面这行，再双击打开：
 
   ```bash
-  xcode-select --install
+  xattr -dr com.apple.quarantine /Applications/BarMeter.app
   ```
 
-  不需要装完整的 Xcode，只要命令行工具。
+**用命令行安装（不会弹上面的提示）**：装了 GitHub 命令行 `gh` 并登录过的话，一条命令装完：
 
-### 2. 下载并安装
+```bash
+cd /tmp && gh release download -R paxfi/BarMeter -p '*.dmg' --clobber && \
+  hdiutil attach -quiet -nobrowse BarMeter-*.dmg && \
+  rm -rf /Applications/BarMeter.app && cp -R /Volumes/BarMeter/BarMeter.app /Applications/ && \
+  hdiutil detach -quiet /Volumes/BarMeter && open /Applications/BarMeter.app
+```
+
+### 装完会发生什么
+
+- 右上角状态栏出现监控条，**点一下**会弹出详细菜单。程序坞里不会出现图标，这是正常的。
+- **第一次运行会自动打开「开机自动启动」**，以后开机自己出来。不想要可以在菜单里关掉。
+- 程序意外崩溃会被系统自动拉起；在菜单里点「退出」则不会。
+- 退出后想再打开：在「应用程序」里双击 BarMeter，或者终端运行 `open -a BarMeter`。
+
+### 从源码编译安装（开发者）
+
+需要 Xcode 命令行工具（`xcrun --find swiftc` 能输出路径即可，没有就先运行 `xcode-select --install`）：
 
 ```bash
 git clone https://github.com/paxfi/BarMeter.git ~/Projects/BarMeter
@@ -39,14 +55,7 @@ cd ~/Projects/BarMeter
 ./build.sh
 ```
 
-`git clone` 会要求登录 GitHub（仓库是 paxfi 组织私有的，需要你的账号在组织里）。看到 `✓ 完成。看一下右上角状态栏。` 就装好了。
-
-### 3. 装完会发生什么
-
-- 程序装在 `~/Applications/BarMeter.app`，只在你自己的账号下，不需要管理员密码。
-- 右上角状态栏出现监控条，**点一下**会弹出详细菜单。
-- **第一次运行会自动打开「开机自动启动」**，以后开机自己出来。不想要可以在菜单里关掉。
-- 程序在本机编译和签名，所以不会弹「无法验证开发者」的提示。
+`build.sh` 编译后装到 `~/Applications/BarMeter.app` 并启动，本机编译不会弹「无法验证开发者」。注意不要同时在 `/Applications` 和 `~/Applications` 各放一份。
 
 ---
 
@@ -93,23 +102,20 @@ cd ~/Projects/BarMeter
 
 ## 更新
 
-有新版本时：
+- **安装包用户**：下载新版 dmg，先在菜单里点「退出 BarMeter」，再把新版拖进「应用程序」选「替换」，然后打开。设置都保留。
+- **源码用户**：
 
-```bash
-cd ~/Projects/BarMeter
-git pull
-./build.sh
-```
-
-`build.sh` 会自动替换旧版本并重启，设置都保留。
+  ```bash
+  cd ~/Projects/BarMeter && git pull && ./build.sh
+  ```
 
 ## 卸载
 
 1. 菜单里关掉「开机自动启动」，再点「退出 BarMeter」。
-2. 删除程序和源码：
+2. 删掉程序（装在哪就删哪个），再清掉启动项和设置：
 
 ```bash
-rm -rf ~/Applications/BarMeter.app ~/Projects/BarMeter
+rm -rf /Applications/BarMeter.app ~/Applications/BarMeter.app ~/Projects/BarMeter
 rm -f ~/Library/LaunchAgents/com.paxfi.barmeter.plist
 defaults delete com.paxfi.barmeter 2>/dev/null
 ```
@@ -124,7 +130,7 @@ defaults delete com.paxfi.barmeter 2>/dev/null
 多半是被刘海挡住或被系统隐藏了。14/16 寸 MacBook Pro 的内建屏有刘海，状态栏放不下时 macOS 会直接隐藏放不下的图标。办法：
 - 换成紧凑样式：外接屏上点开菜单 →「状态栏样式」→「紧凑」；或者在终端运行下面这行再重启程序：
   ```bash
-  defaults write com.paxfi.barmeter style compact && pkill -x BarMeter; open ~/Applications/BarMeter.app
+  defaults write com.paxfi.barmeter style compact && pkill -x BarMeter; open -a BarMeter
   ```
 - 按住 ⌘ 拖动状态栏图标，把 BarMeter 拖到靠右的位置。
 - 在菜单「状态栏显示」里关掉不需要的项，变窄一些。
@@ -133,10 +139,13 @@ defaults delete com.paxfi.barmeter 2>/dev/null
 ```bash
 pgrep -x BarMeter && echo 在运行 || echo 没运行
 ```
-没运行就 `open ~/Applications/BarMeter.app`。
+没运行就 `open -a BarMeter`。
 
 **`./build.sh` 提示「没找到 Swift 编译器」？**
 回到第 1 步运行 `xcode-select --install`。系统大版本升级后命令行工具偶尔会失效，重新装一次即可。
+
+**「应用程序」里看不到 BarMeter 的图标 / 图标是白板？**
+刚替换完 Finder 可能还在用旧缓存，注销重新登录一次就好。
 
 **`./build.sh` 提示 Permission denied？**
 运行 `chmod +x build.sh` 再执行一次。
@@ -172,5 +181,14 @@ BarMeter 显示的是实际马上能用的空间，不含系统「可清除」�
 | `BarMeter.swift` | 全部源码 |
 | `Info.plist` | App 信息（只显示在状态栏，不出现在程序坞） |
 | `build.sh` | 编译、本地签名、安装到 `~/Applications` 并启动 |
+| `package.sh` | 打发布用安装包 `dist/BarMeter-<版本>.dmg`（arm64 + x86_64 通用） |
+| `Resources/` | App 图标 `AppIcon.icns`、安装窗口背景 |
+| `tools/` | 生成图标和安装窗口背景的脚本（`swift tools/make-icon.swift Resources`） |
 
 改完代码直接运行 `./build.sh` 就能看到效果。
+
+**发新版本**：改 `Info.plist` 里的 `CFBundleShortVersionString`，运行 `./package.sh`，再把 `dist/` 里的 dmg 传到 GitHub Release：
+
+```bash
+gh release create v1.1 dist/BarMeter-1.1.dmg -R paxfi/BarMeter --title "BarMeter 1.1" --notes "更新说明"
+```

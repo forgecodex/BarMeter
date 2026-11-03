@@ -16,7 +16,7 @@ fi
 if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]; then ARCH=arm64; else ARCH=x86_64; fi
 OUT="build/$APP_NAME"
 rm -rf build
-mkdir -p "$OUT/Contents/MacOS"
+mkdir -p "$OUT/Contents/MacOS" "$OUT/Contents/Resources"
 
 echo "▸ 编译（$ARCH, -O）…"
 xcrun swiftc -O -parse-as-library \
@@ -24,6 +24,7 @@ xcrun swiftc -O -parse-as-library \
   -o "$OUT/Contents/MacOS/BarMeter" \
   BarMeter.swift
 cp Info.plist "$OUT/Contents/Info.plist"
+cp Resources/AppIcon.icns "$OUT/Contents/Resources/AppIcon.icns"
 
 echo "▸ 本地签名…"
 codesign --force --sign - "$OUT" >/dev/null
