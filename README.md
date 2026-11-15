@@ -14,8 +14,7 @@
 
 需要 **macOS 12 Monterey 及以上**，Apple 芯片和 Intel 都能用（同一个安装包）。
 
-1. 打开 [Releases 页面](https://github.com/paxfi/BarMeter/releases/latest)，下载 `BarMeter-x.x.dmg`。
-   仓库是 paxfi 组织私有的，需要先在浏览器里登录有组织权限的 GitHub 账号。
+1. 下载安装包：[BarMeter.dmg](https://github.com/forgecodex/BarMeter/releases/latest/download/BarMeter.dmg)（也可以到 [Releases 页面](https://github.com/forgecodex/BarMeter/releases/latest) 下载）。不用登录 GitHub。
 2. 双击打开 dmg，把 **BarMeter** 拖到旁边的 **Applications（应用程序）** 文件夹。
 3. 到「应用程序」里双击 BarMeter 打开。
 
@@ -29,11 +28,11 @@
   xattr -dr com.apple.quarantine /Applications/BarMeter.app
   ```
 
-**用命令行安装（不会弹上面的提示）**：装了 GitHub 命令行 `gh` 并登录过的话，一条命令装完：
+**用命令行安装（不会弹上面的提示）**：在终端粘贴这一条，什么都不用装：
 
 ```bash
-cd /tmp && gh release download -R paxfi/BarMeter -p '*.dmg' --clobber && \
-  hdiutil attach -quiet -nobrowse BarMeter-*.dmg && \
+curl -fsSL -o /tmp/BarMeter.dmg https://github.com/forgecodex/BarMeter/releases/latest/download/BarMeter.dmg && \
+  hdiutil attach -quiet -nobrowse /tmp/BarMeter.dmg && \
   rm -rf /Applications/BarMeter.app && cp -R /Volumes/BarMeter/BarMeter.app /Applications/ && \
   hdiutil detach -quiet /Volumes/BarMeter && open /Applications/BarMeter.app
 ```
@@ -50,7 +49,7 @@ cd /tmp && gh release download -R paxfi/BarMeter -p '*.dmg' --clobber && \
 需要 Xcode 命令行工具（`xcrun --find swiftc` 能输出路径即可，没有就先运行 `xcode-select --install`）：
 
 ```bash
-git clone https://github.com/paxfi/BarMeter.git ~/Projects/BarMeter
+git clone https://github.com/forgecodex/BarMeter.git ~/Projects/BarMeter
 cd ~/Projects/BarMeter
 ./build.sh
 ```
@@ -190,5 +189,6 @@ BarMeter 显示的是实际马上能用的空间，不含系统「可清除」�
 **发新版本**：改 `Info.plist` 里的 `CFBundleShortVersionString`，运行 `./package.sh`，再把 `dist/` 里的 dmg 传到 GitHub Release：
 
 ```bash
-gh release create v1.1 dist/BarMeter-1.1.dmg -R paxfi/BarMeter --title "BarMeter 1.1" --notes "更新说明"
+cp dist/BarMeter-1.1.dmg dist/BarMeter.dmg   # 固定文件名，README 里的下载链接指向它
+gh release create v1.1 dist/BarMeter-1.1.dmg dist/BarMeter.dmg -R forgecodex/BarMeter --title "BarMeter 1.1" --notes "更新说明"
 ```
